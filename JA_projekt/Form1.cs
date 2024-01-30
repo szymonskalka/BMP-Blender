@@ -48,7 +48,7 @@ namespace JA_projekt
                                                           int alpha);
 
         [DllImport("AsmLib.dll")]
-        unsafe public static extern byte MyProc1(byte* byteArray1First, byte* byteArray1Last,
+        unsafe public static extern void MyProc1(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -208,56 +208,9 @@ namespace JA_projekt
         }
 
       
-        unsafe async private void BlendInCppInThreadOneParamater(object obj)
-        {
-            int i = (int)obj;
-            //mut.WaitOne();
-            //Monitor.Enter(imageByteArray3);
-            byte* firstByte1;
-            byte* lastByte1;
-            fixed (byte* fb1 = &imageByteArray3[i]) { firstByte1 = fb1; };
-            fixed (byte* lb1 = &imageByteArray3[i + bytes]) { lastByte1 = lb1; };
-            //Monitor.Exit(imageByteArray3);
-
-            byte* firstByte2;
-            byte* lastByte2;
-
-            //Monitor.Enter(imageByteArray2);
-            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
-            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
-            BlendImagesInCpp2(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
-            //Monitor.Exit(imageByteArray2);
-            //mut.ReleaseMutex();
-        }
-
-        unsafe async private void BlendInAsmInThreadOneParamater(object obj)
-        {
-            int i = (int)obj;
-            //mut.WaitOne();
-            //Monitor.Enter(imageByteArray3);
-            byte* firstByte1;
-            byte* lastByte1;
-            fixed (byte* fb1 = &imageByteArray3[i]) { firstByte1 = fb1; };
-            fixed (byte* lb1 = &imageByteArray3[i + bytes]) { lastByte1 = lb1; };
-            //Monitor.Exit(imageByteArray3);
-
-            byte* firstByte2;
-            byte* lastByte2;
-
-            byte value = *firstByte1;
-
-            //Monitor.Enter(imageByteArray2);
-            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
-            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
-            MyProc1(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
-            //Monitor.Exit(imageByteArray2);
-            //mut.ReleaseMutex();
-        }
-       
 
         unsafe private void button4_Click(object sender, EventArgs e)
         {
-            imageByteArray4 = null;
             if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
@@ -291,7 +244,7 @@ namespace JA_projekt
                         thr.Abort();
                     }
                     time.Stop();
-                    textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
+                    textBox1.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
 
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                 }
@@ -301,6 +254,54 @@ namespace JA_projekt
                 }
             }
         }
+
+
+        unsafe async private void BlendInCppInThreadOneParamater(object obj)
+        {
+            int i = (int)obj;
+            //mut.WaitOne();
+            //Monitor.Enter(imageByteArray3);
+            byte* firstByte1;
+            byte* lastByte1;
+            fixed (byte* fb1 = &imageByteArray3[i]) { firstByte1 = fb1; };
+            fixed (byte* lb1 = &imageByteArray3[i + bytes]) { lastByte1 = lb1; };
+            //Monitor.Exit(imageByteArray3);
+
+            byte* firstByte2;
+            byte* lastByte2;
+
+            //Monitor.Enter(imageByteArray2);
+            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
+            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
+            BlendImagesInCpp2(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            //Monitor.Exit(imageByteArray2);
+            //mut.ReleaseMutex();
+        }
+
+        unsafe async private void BlendInAsmInThreadOneParamater(object obj)
+        {
+            int i = (int)obj;
+            //mut.WaitOne();
+            //Monitor.Enter(imageByteArray3);
+            byte* firstByte1;
+            byte* lastByte1;
+            fixed (byte* fb1 = &imageByteArray4[i]) { firstByte1 = fb1; };
+            fixed (byte* lb1 = &imageByteArray4[i + bytes]) { lastByte1 = lb1; };
+            //Monitor.Exit(imageByteArray3);
+
+            byte* firstByte2;
+            byte* lastByte2;
+
+            byte value = *firstByte1;
+
+            //Monitor.Enter(imageByteArray2);
+            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
+            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
+            MyProc1(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            //Monitor.Exit(imageByteArray2);
+            //mut.ReleaseMutex();
+        }
+
 
         /*
           private void button4_Click(object sender, EventArgs e)
