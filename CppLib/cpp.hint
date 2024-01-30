@@ -1,0 +1,2 @@
+#define CPPLIB_API __declspec(dllexport)
+#define CPPLIB_API __declspec(dllimport)
