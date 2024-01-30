@@ -244,6 +244,8 @@ namespace JA_projekt
             byte* firstByte2;
             byte* lastByte2;
 
+            byte value = *firstByte1;
+
             //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };

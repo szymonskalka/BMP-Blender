@@ -10,10 +10,12 @@
 
 OPTION CASEMAP:NONE
 
+.DATA
 
-
-
-
+alpha dd 0
+lastbyte1 dd 0
+lastbyte2 dd 0
+alpharemainder dd 0
 
 .CODE
 
@@ -30,16 +32,39 @@ DllEntry ENDP
 ;-------------------------------------------------------------------------
 
 MyProc1 proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
+    
 
-; Function arguments
-; Function start
-       push ebp
-       mov ebp, esp
+    mov eax, dword ptr [lastByte1] 
+    mov lastbyte1, eax
 
-       ;movsx eax, [firstByte1]
+    mov eax, dword ptr [lastByte2] 
+    mov lastbyte2, eax
 
-; Function end
-        ret
+    mov dl, ALPHA
+    movzx edx, dl
+    mov alpha, edx
+
+    mov al, 255
+    sub al, dl
+    movzx eax, al
+    mov alpharemainder, eax
+
+
+    mov ecx, dword ptr [firstByte1] 
+    mov al, [ecx]
+    movzx eax, al
+
+
+     mov ecx, dword ptr [firstByte2] 
+    mov bl, [ecx]
+    movzx ebx, bl
+
+
+  
+  
+
+       
+       ret
 MyProc1 endp
 
 END DllEntry
