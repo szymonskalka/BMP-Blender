@@ -71,7 +71,10 @@ Copy:
     add eax, ebx ; add byte1 to byte2
     mov ecx, 255 ; load 255 for diving
     div ecx ; get blended byte value
-    mov [byte1], ecx ; save blended value to pointer of imageByteArray4[]
+
+
+    mov ecx, dword ptr [byte1]
+    mov [ecx], eax ; save blended value to pointer of imageByteArray4[]
 
    
     jmp Check
@@ -80,15 +83,20 @@ Check:
     mov eax, byte1
     mov ebx, lastbyte1
     cmp eax, ebx ; compare current byte and last byte in array
-    JE Finished ; finish is last byte is reached and blended
-    ; if not increment pointers
+    JB Increment ; if less  increment pointers
+    jmp Finished ; finish is last byte is reached and blended
+   
+    
+
+Increment:
     mov eax, byte1 ; load pointers of first 
     mov ebx, byte2 ; and second image bytes
-    add eax, 8 ; increment 
-    add ebx, 8
+    add eax, 1 ; increment 
+    add ebx, 1
     mov byte1, eax ; save to variables
     mov byte2, ebx
     jmp Copy
+
 
     
 

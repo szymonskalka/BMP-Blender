@@ -70,7 +70,6 @@ namespace JA_projekt
             }
         }
 
-
         public Form1()
         {
             InitializeComponent();
@@ -196,7 +195,14 @@ namespace JA_projekt
                         thr.Abort();
                     }
                     time.Stop();
-                    textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");     
+                    textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
+
+                    byte[] testArray = new byte[imageByteArray1.Length];
+                    byte[] testArray2 = new byte[imageByteArray1.Length];
+
+                    imageByteArray3.CopyTo(testArray, 0);
+                    imageByteArray1.CopyTo(testArray2, 0);
+
 
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
                 }
@@ -225,6 +231,7 @@ namespace JA_projekt
                     threads.Clear();
                     List<int> index = new List<int>();
                     index.Add(0);
+                    
                     for (int i = 0; i < THREADS - 1; i++)
                     {
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
@@ -244,8 +251,20 @@ namespace JA_projekt
                         thr.Abort();
                     }
                     time.Stop();
-                    textBox1.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
+                    textBox2.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
 
+                    byte[] testArray = new byte[imageByteArray1.Length];
+                    byte[] testArray2 = new byte[imageByteArray1.Length];
+
+                    for (int i = 0; i < 51; i++)
+                    {
+                        imageByteArray4[i] = imageByteArray1[i];
+                    }
+
+                    imageByteArray4.CopyTo(testArray, 0);
+                    imageByteArray1.CopyTo(testArray2, 0);
+
+                    
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                 }
                 else
@@ -292,8 +311,6 @@ namespace JA_projekt
             byte* firstByte2;
             byte* lastByte2;
 
-            byte value = *firstByte1;
-
             //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
@@ -303,35 +320,7 @@ namespace JA_projekt
         }
 
 
-        /*
-          private void button4_Click(object sender, EventArgs e)
-        {
-            imageByteArray4 = null;
-            if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
-            {
-                if (imageByteArray1.Length == imageByteArray2.Length)
-                {
-                    imageByteArray4 = new byte[imageByteArray1.Length];
-                    int check = 0;
-                    for (int i = 0; i < imageByteArray1.Length; i++)
-                    {
-                         
-                        byte b = MyProc1(imageByteArray1[i], imageByteArray2[i], ALPHA);
-                        byte c = BlendImagesInCpp(imageByteArray1[i], imageByteArray2[i], ALPHA);
-                        imageByteArray4[i] = b;
-                        if (imageByteArray3[i] != imageByteArray4[i])
-                            check++;
-                    }
-                    pictureBox3.Image = null;
-                    pictureBox3.Image = ByteArrayToImage(imageByteArray3);
-                }
-                else
-                {
-                    //TODO: images formats not matching error message
-                }
-            }
-        }
-        */
+       
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
