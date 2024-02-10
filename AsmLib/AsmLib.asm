@@ -1,10 +1,14 @@
-;-------------------------------------------------------------------------
+; -------------------------------------------------------------------------
 ;
-;Author: Szymon Skalka
+; Autor: Szymon Skalka
+; Temat: Program laczacy dwa pliki graficzne.
+; Opis: Program mnozy wartosci bajtowe dwoch obrazow przez zmienna i oblicza wartosc polaczona 
+; Data: 11.02.2024 Semestr 5 Rok II Skalka Szymon
+; Wersja 1.0
 ;
-;This is the .asm main function
+; This is the .asm exported function
 ;
-;-------------------------------------------------------------------------
+; -------------------------------------------------------------------------
 .386
 .MODEL FLAT, STDCALL
 
@@ -31,7 +35,7 @@ ret
 DllEntry ENDP
 
 
-MyProc1 proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
+BlendInAsm proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
     
     ;load parameters to variables
     mov eax, dword ptr [lastByte1] 
@@ -108,7 +112,7 @@ Increment:
 Finished:
     ret
 
-MyProc1 endp
+BlendInAsm endp
 
 END DllEntry
 ;-------------------------------------------------------------------------

@@ -9,15 +9,3 @@
 #else
 #define CPPLIB_API __declspec(dllimport)
 #endif
-
-// This class is exported from the dll
-class CPPLIB_API CCppLib {
-public:
-	CCppLib(void);
-	// TODO: add your methods here.
-	//aaa
-};
-
-extern CPPLIB_API int nCppLib;
-
-CPPLIB_API int fnCppLib(void);

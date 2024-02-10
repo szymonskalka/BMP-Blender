@@ -1,23 +1,38 @@
-// CppLib.cpp : Defines the exported functions for the DLL.
+// -------------------------------------------------------------------------
 //
-
+// Autor: Szymon Ska?ka
+// Temat: Program ??cz?cy dwa pliki graficzne.
+// Opis: Program mno?y warto?ci bajtowe dwóch obrazów przez zmienn? i oblicza warto?? po??czon? 
+// Data: 11.02.2024 Semestr 5 Rok II Ska?ka Szymon
+// Wersja 1.0
+//
+// This is the C# Windows Forms main function
+//
+// -------------------------------------------------------------------------
 #include "pch.h"
 #include "framework.h"
 #include "CppLib.h"
 
-/*
-// This is an example of an exported variable
-CPPLIB_API int nCppLib=0;
+#include <bitset>
+#include <cstddef>
+#include <iostream>
 
-// This is an example of an exported function.
-CPPLIB_API int fnCppLib(void)
-{
-    return 0;
+
+
+
+void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
+	std::byte* byteArray2First, std::byte* byteArray2Last,
+	int alpha) {
+	while (byteArray1First != byteArray1Last) {
+		*byteArray1First = (std::byte)(((int)*byteArray1First * (255 - alpha) + (int)*byteArray2First * alpha) / 255);
+		byteArray1First++;
+		byteArray2First++;
+	}
+	*byteArray1Last = (std::byte)(((int)*byteArray1Last * (255 - alpha) + (int)*byteArray2Last * alpha) / 255);
 }
 
-// This is the constructor of a class that has been exported.
-CCppLib::CCppLib()
-{
-    return;
+extern "C" __declspec(dllexport)  void BlendImagesInCpp(std::byte * byteArray1First, std::byte * byteArray1Last,
+	std::byte * byteArray2First, std::byte * byteArray2Last,
+	int alpha) {
+	return BlendImages(byteArray1First, byteArray1Last, byteArray2First, byteArray2Last, alpha);
 }
-*/

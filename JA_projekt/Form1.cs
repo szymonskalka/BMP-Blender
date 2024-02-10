@@ -1,4 +1,16 @@
-﻿using System;
+﻿// -------------------------------------------------------------------------
+//
+// Autor: Szymon Skałka
+// Temat: Program łączący dwa pliki graficzne.
+// Opis: Program mnoży wartości bajtowe dwóch obrazów przez zmienną i oblicza wartość połączoną 
+// Data: 11.02.2024 Semestr 5 Rok II Skałka Szymon
+// Wersja 1.0
+//
+// This is the C# Windows Forms main function
+//
+// -------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -30,25 +42,14 @@ namespace JA_projekt
         public byte[] imageByteArray4;
 
 
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr Create(int x);
 
         [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TestAdd(IntPtr a, int x);
-
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int TestFunc(int x);
-
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern byte BlendImagesInCpp(byte imageByteArray1, byte imageByteArray2, int alpha);
-
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void BlendImagesInCpp2(byte* byteArray1First, byte* byteArray1Last,
+        unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
 
         [DllImport("AsmLib.dll")]
-        unsafe public static extern void MyProc1(byte* byteArray1First, byte* byteArray1Last,
+        unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -290,7 +291,7 @@ namespace JA_projekt
             //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
-            BlendImagesInCpp2(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            BlendImagesInCpp(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
             //Monitor.Exit(imageByteArray2);
             //mut.ReleaseMutex();
         }
@@ -313,7 +314,7 @@ namespace JA_projekt
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
 
-            MyProc1(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            BlendInAsm(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
             //Monitor.Exit(imageByteArray2);
             //mut.ReleaseMutex();
         }
