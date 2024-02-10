@@ -262,7 +262,7 @@ namespace JA_projekt
 
                     for (int i = 0; i < 51; i++)
                     {
-                        imageByteArray4[i] = imageByteArray1[i];
+                        //imageByteArray4[i] = imageByteArray1[i];
                     }
 
                    
@@ -353,6 +353,116 @@ namespace JA_projekt
         {
 
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
+            {
+                if (imageByteArray1.Length == imageByteArray2.Length)
+                {
+                    List<String> output = new List<String>();
+
+                    output.Add(GenerateData(1));
+                    output.Add(GenerateData(2));
+                    output.Add(GenerateData(4));
+                    output.Add(GenerateData(8));
+                    output.Add(GenerateData(16));
+                    output.Add(GenerateData(32));
+                    output.Add(GenerateData(64));
+
+                    string docPath =
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "data.txt")))
+                    {
+                        //text saved as nThreads asmTime cppTime
+                        foreach (string line in output)
+                            outputFile.WriteLine(line);
+                    }
+
+
+
+
+                }
+                else
+                {
+                    //TODO: images formats not matching error message
+                }
+            }
+        }
+
+        private string GenerateData(int  threadAmount)
+        {
+            String data = "";
+            Stopwatch time = new Stopwatch();
+            time.Start();
+            imageByteArray4 = new byte[imageByteArray1.Length];
+            imageByteArray1.CopyTo(imageByteArray4, 0);
+
+            bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / threadAmount));
+
+            threads.Clear();
+            List<int> index = new List<int>();
+            index.Add(0);
+
+            for (int i = 0; i < threadAmount - 1; i++)
+            {
+                threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
+                threads[i].Start(index[i]);
+                index.Add(index[i] + bytes + 1);
+            }
+
+            if (index.Last() + bytes > imageByteArray4.Length - 1)
+                index[index.Count - 1] = imageByteArray4.Length - 1 - bytes;
+
+            threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
+            threads.Last().Start(index.Last());
+
+            foreach (Thread thr in threads)
+            {
+                thr.Join();
+                thr.Abort();
+            }
+            time.Stop();
+
+            data += (threadAmount + " " + time.ElapsedMilliseconds);
+
+
+            time = new Stopwatch();
+            time.Start();
+            imageByteArray3 = new byte[imageByteArray1.Length];
+            imageByteArray1.CopyTo(imageByteArray3, 0);
+
+            bytes = (int)Math.Floor((double)((imageByteArray3.Length - 1) / threadAmount));
+
+            threads.Clear();
+            index = new List<int>();
+            index.Add(0);
+
+            for (int i = 0; i < threadAmount - 1; i++)
+            {
+                threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
+                threads[i].Start(index[i]);
+                index.Add(index[i] + bytes + 1);
+            }
+
+            if (index.Last() + bytes > imageByteArray3.Length - 1)
+                index[index.Count - 1] = imageByteArray3.Length - 1 - bytes;
+
+            threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
+            threads.Last().Start(index.Last());
+
+            foreach (Thread thr in threads)
+            {
+                thr.Join();
+                thr.Abort();
+            }
+            time.Stop();
+            data += (" " + time.ElapsedMilliseconds);
+
+            // SAVE TO FILE HERE
+            return data;
+        }
+
     }
 
 
