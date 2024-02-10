@@ -142,6 +142,9 @@ namespace JA_projekt
             if (!string.IsNullOrEmpty(openFileDialog1.FileName))
             {
                 pictureBox1.Image = Image.FromFile(@openFileDialog1.FileName);
+                pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+
+
                 imageByteArray1 = ImageToByteArray(Image.FromFile(@openFileDialog1.FileName));
 
             }
@@ -156,6 +159,7 @@ namespace JA_projekt
             if (!string.IsNullOrEmpty(openFileDialog2.FileName))
             {
                 pictureBox2.Image = Image.FromFile(@openFileDialog2.FileName);
+                pictureBox2.SizeMode = PictureBoxSizeMode.StretchImage;
                 imageByteArray2 = ImageToByteArray(Image.FromFile(@openFileDialog2.FileName));
             }
         }
@@ -170,7 +174,7 @@ namespace JA_projekt
                     time.Start();
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
-                    
+
                     bytes = (int)Math.Floor((double)((imageByteArray3.Length-1) / THREADS));
 
                     threads.Clear();
@@ -197,14 +201,9 @@ namespace JA_projekt
                     time.Stop();
                     textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
 
-                    byte[] testArray = new byte[imageByteArray1.Length];
-                    byte[] testArray2 = new byte[imageByteArray1.Length];
-
-                    imageByteArray3.CopyTo(testArray, 0);
-                    imageByteArray1.CopyTo(testArray2, 0);
-
 
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
+                    pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
                 else
                 {
@@ -226,9 +225,6 @@ namespace JA_projekt
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
 
-                    byte[] testArray1 = new byte[imageByteArray1.Length];
-                    byte[] testArray2 = new byte[imageByteArray1.Length];
-                    imageByteArray4.CopyTo(testArray2, 0);
 
 
                     bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
@@ -260,17 +256,14 @@ namespace JA_projekt
 
                    
 
-                    for (int i = 0; i < 51; i++)
-                    {
-                        //imageByteArray4[i] = imageByteArray1[i];
-                    }
+                 
 
                    
 
-                    imageByteArray4.CopyTo(testArray1, 0);
 
                     
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
+                    pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
                 else
                 {

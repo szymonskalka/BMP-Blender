@@ -30,10 +30,6 @@ ret
 
 DllEntry ENDP
 
-;-------------------------------------------------------------------------
-; This is an example function. It's here to show
-; where to put your own functions in the DLL
-;-------------------------------------------------------------------------
 
 MyProc1 proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
     
@@ -56,7 +52,7 @@ MyProc1 proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: by
 
     
 
-Copy:
+Calculate:
 
     ;TODO: after the first array element value of [byte1] is always 0
 
@@ -104,7 +100,7 @@ Increment:
     add ebx, 1
     mov byte2, ebx
 
-    jmp Copy ; return to copying
+    jmp Calculate ; return to Calculating
 
 
     
