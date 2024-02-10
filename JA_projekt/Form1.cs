@@ -226,6 +226,11 @@ namespace JA_projekt
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
 
+                    byte[] testArray1 = new byte[imageByteArray1.Length];
+                    byte[] testArray2 = new byte[imageByteArray1.Length];
+                    imageByteArray4.CopyTo(testArray2, 0);
+
+
                     bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
 
                     threads.Clear();
@@ -253,16 +258,16 @@ namespace JA_projekt
                     time.Stop();
                     textBox2.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
 
-                    byte[] testArray = new byte[imageByteArray1.Length];
-                    byte[] testArray2 = new byte[imageByteArray1.Length];
+                   
 
                     for (int i = 0; i < 51; i++)
                     {
                         imageByteArray4[i] = imageByteArray1[i];
                     }
 
-                    imageByteArray4.CopyTo(testArray, 0);
-                    imageByteArray1.CopyTo(testArray2, 0);
+                   
+
+                    imageByteArray4.CopyTo(testArray1, 0);
 
                     
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
@@ -314,6 +319,7 @@ namespace JA_projekt
             //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
+
             MyProc1(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
             //Monitor.Exit(imageByteArray2);
             //mut.ReleaseMutex();

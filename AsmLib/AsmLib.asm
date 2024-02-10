@@ -19,6 +19,7 @@ alpharemainder dd 0
 
 byte1 dd 0
 byte2 dd 0
+newByte dd 0
 
 .CODE
 
@@ -56,6 +57,9 @@ MyProc1 proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: by
     
 
 Copy:
+
+    ;TODO: after the first array element value of [byte1] is always 0
+
     mov ecx, dword ptr [byte1] 
     mov al, [ecx]
     movzx eax, al ; load first image byte to eax
@@ -71,10 +75,13 @@ Copy:
     add eax, ebx ; add byte1 to byte2
     mov ecx, 255 ; load 255 for diving
     div ecx ; get blended byte value
+    mov newByte, eax
 
 
-    mov ecx, dword ptr [byte1]
-    mov [ecx], eax ; save blended value to pointer of imageByteArray4[]
+    mov ecx, dword ptr [byte1] 
+    nop
+    mov eax, newByte
+    mov byte ptr [ecx], al ; save blended value to pointer of imageByteArray4[]
 
    
     jmp Check
@@ -89,13 +96,15 @@ Check:
     
 
 Increment:
-    mov eax, byte1 ; load pointers of first 
-    mov ebx, byte2 ; and second image bytes
-    add eax, 1 ; increment 
+    mov ebx, byte1 ; load pointers of first     
+    add ebx, 1 ; increment     
+    mov byte1, ebx ; save to variables
+
+    mov ebx, byte2 ; same for second image bytes
     add ebx, 1
-    mov byte1, eax ; save to variables
     mov byte2, ebx
-    jmp Copy
+
+    jmp Copy ; return to copying
 
 
     
