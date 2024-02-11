@@ -90,7 +90,7 @@ namespace JA_projekt
         public Image ByteArrayToImage(byte[] bytesArr)
         {
             using (MemoryStream memstr = new MemoryStream(bytesArr))
-            {
+            {               
                 memstr.Position = 0;
                 return Image.FromStream(memstr);
             }
@@ -217,6 +217,7 @@ namespace JA_projekt
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
                     Stopwatch time = new Stopwatch();
+                    time.Reset();
                     time.Start();
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
@@ -266,6 +267,7 @@ namespace JA_projekt
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
                     Stopwatch time = new Stopwatch();
+                    time.Reset();
                     time.Start();
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
@@ -416,7 +418,8 @@ namespace JA_projekt
                         foreach (string line in output)
                             outputFile.WriteLine(line);
                     }
-
+                    textBox1.Text = ("Finished testing, data successfully generated.");
+                    textBox2.Text = ("File saved in My Documents as data.txt");
 
 
 
@@ -439,6 +442,7 @@ namespace JA_projekt
         {
             String data = "";
             Stopwatch time = new Stopwatch();
+            time.Reset();
             time.Start();
             imageByteArray4 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray4, 0);
@@ -473,6 +477,7 @@ namespace JA_projekt
 
 
             time = new Stopwatch();
+            time.Reset();
             time.Start();
             imageByteArray3 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray3, 0);
@@ -485,7 +490,7 @@ namespace JA_projekt
 
             for (int i = 0; i < threadAmount - 1; i++)
             {
-                threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
+                threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
                 threads[i].Start(index[i]);
                 index.Add(index[i] + bytes + 1);
             }

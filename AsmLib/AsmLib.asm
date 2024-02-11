@@ -104,11 +104,11 @@ Check:
 
 Increment:
     mov ebx, byte1 ; load pointers of first     
-    add ebx, 1 ; increment     
+    inc ebx ; increment     
     mov byte1, ebx ; save to variables
 
     mov ebx, byte2 ; same for second image bytes
-    add ebx, 1
+    inc ebx
     mov byte2, ebx
 
     jmp Calculate ; return to Calculating
