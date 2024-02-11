@@ -1,14 +1,14 @@
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------------ -
 //
-// Autor: Szymon Ska?ka
-// Temat: Program ??cz?cy dwa pliki graficzne.
-// Opis: Program mno?y warto?ci bajtowe dwóch obrazów przez zmienn? i oblicza warto?? po??czon? 
-// Data: 11.02.2024 Semestr 5 Rok II Ska?ka Szymon
+// Autor: Szymon Skalka
+// Temat: Program laczacy dwa pliki graficzne.
+// Opis: Program mnozy wartosci bajtowe dwoch obrazow przez zmienna i oblicza wartosc polaczona
+// Data: 11.02.2024 Semestr 5 Rok II Skalka Szymon
 // Wersja 1.0
 //
-// This is the C# Windows Forms main function
+// This is the C++ exported function
 //
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------------ -
 #include "pch.h"
 #include "framework.h"
 #include "CppLib.h"
@@ -19,7 +19,13 @@
 
 
 
-
+/**
+* Name: BlendImages
+* Paramters: 4 pointers and the alpha blending value (0-255).
+* Pointing to first and last byte in each imageArray.
+* No output parameters - all operations done on the first array pointers
+*
+*/
 void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
 	std::byte* byteArray2First, std::byte* byteArray2Last,
 	int alpha) {
@@ -31,6 +37,10 @@ void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
 	*byteArray1Last = (std::byte)(((int)*byteArray1Last * (255 - alpha) + (int)*byteArray2Last * alpha) / 255);
 }
 
+/**
+* Export definition
+*  
+*/
 extern "C" __declspec(dllexport)  void BlendImagesInCpp(std::byte * byteArray1First, std::byte * byteArray1Last,
 	std::byte * byteArray2First, std::byte * byteArray2Last,
 	int alpha) {

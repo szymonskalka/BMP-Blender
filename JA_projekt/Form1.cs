@@ -42,16 +42,35 @@ namespace JA_projekt
         public byte[] imageByteArray4;
 
 
-
+        /**
+        * Name: BlendImagesInCpp
+        * Paramters: 4 pointers and the alpha blending value (0-255).
+        * Pointing to first and last byte in each imageArray.
+        * No output parameters - all operations done on the first array pointers
+        *
+        */
         [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
-
+        /**
+        * Name: BlendInAsm
+        * Paramters: 4 pointers and the alpha blending value (0-255).
+        * Pointing to first and last byte in each imageArray.
+        * No output parameters - all operations done on the first array pointers
+        *
+        */
         [DllImport("AsmLib.dll")]
         unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);
+
+        /**
+        * Name: ImageToByteArray
+        * Paramters: Image that is going to be converted to byte array
+        * Output: byte array created from the image
+        *
+        */
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
         {
             using (MemoryStream memstr = new MemoryStream())
@@ -62,6 +81,12 @@ namespace JA_projekt
             }
         }
 
+        /**
+        * Name: ByteArrayToImage
+        * Paramters: byte array that is going to be converted to Image
+        * Output:  image created from the byte array
+        *
+        */
         public Image ByteArrayToImage(byte[] bytesArr)
         {
             using (MemoryStream memstr = new MemoryStream(bytesArr))
@@ -70,7 +95,10 @@ namespace JA_projekt
                 return Image.FromStream(memstr);
             }
         }
-
+        /**
+        * Name: Form1
+        * Default constructor       
+        */
         public Form1()
         {
             InitializeComponent();
@@ -86,7 +114,11 @@ namespace JA_projekt
             imageByteArray4 = null;
         }
 
-        
+        /**
+        * Name: OnPaintBackground
+        * Sets the background to gradient
+        *
+        */
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             using (System.Drawing.Drawing2D.LinearGradientBrush brush = 
@@ -98,42 +130,45 @@ namespace JA_projekt
                 e.Graphics.FillRectangle(brush, this.ClientRectangle);
             }
         }
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-            this.Invalidate();
-        }
+       
+        /**
+        * Name: Forms1_Load
+        * sets the imageboxes to zoom
+        *
+        */
         private void Forms1_Load(object sender, EventArgs e)
+        {
+            
+        }
+        /**
+        * Name: Form1_Load
+        * sets the imageboxes to zoom
+        *
+        */
+        private void Form1_Load(object sender, EventArgs e)
         {
             this.CenterToScreen();
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-
-        }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
+        /**
+        * Name: trackBar1_Scroll
+        * Handles the trackbar and sets the ALPHA variable
+        *
+        */
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
             ALPHA = trackBar1.Value;
             textBox3.Text = ("ALPHA: " + ALPHA);
         }
 
-        private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-          
-        }
-
+        /**
+        * Name: button1_Click
+        * Used to import images to the first image frame and converts it to byte array
+        *
+        */
         private void button1_Click(object sender, EventArgs e)
         {
             openFileDialog1.FileName = "";
@@ -151,6 +186,11 @@ namespace JA_projekt
             }
         }
 
+        /**
+        * Name: button2_Click
+        * Used to import images to the second image frame and converts it to byte array
+        *
+        */
         private void button2_Click(object sender, EventArgs e)
         {
             openFileDialog2.FileName = "";
@@ -165,6 +205,11 @@ namespace JA_projekt
             }
         }
 
+        /**
+        * Name: button3_Click
+        * Blends two images into one in C++
+        *
+        */
         unsafe private void button3_Click(object sender, EventArgs e)
         {      
             if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
@@ -202,19 +247,18 @@ namespace JA_projekt
                     time.Stop();
                     textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
 
-
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
-                }
-                else
-                {
-                    //TODO: images formats not matching error message
                 }
             }        
         }
 
-      
 
+        /**
+        * Name: button4_Click
+        * Blends two images into one in ASM
+        *
+        */
         unsafe private void button4_Click(object sender, EventArgs e)
         {
             if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
@@ -225,8 +269,6 @@ namespace JA_projekt
                     time.Start();
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
-
-
 
                     bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
 
@@ -254,100 +296,102 @@ namespace JA_projekt
                     }
                     time.Stop();
                     textBox2.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
-
-                   
-
-                 
-
-                   
-
-
                     
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
-                else
-                {
-                    //TODO: images formats not matching error message
-                }
             }
         }
 
-
+        /**
+        * Name: BlendInCppInThreadOneParamater
+        * Parameter: index of the first byte that is going to be handled by the blending function        * 
+        * Calculates byte array range that the blending function is going to work on
+        *
+        */
         unsafe async private void BlendInCppInThreadOneParamater(object obj)
         {
             int i = (int)obj;
-            //mut.WaitOne();
-            //Monitor.Enter(imageByteArray3);
+
             byte* firstByte1;
             byte* lastByte1;
             fixed (byte* fb1 = &imageByteArray3[i]) { firstByte1 = fb1; };
             fixed (byte* lb1 = &imageByteArray3[i + bytes]) { lastByte1 = lb1; };
-            //Monitor.Exit(imageByteArray3);
 
             byte* firstByte2;
             byte* lastByte2;
-
-            //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
             BlendImagesInCpp(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
-            //Monitor.Exit(imageByteArray2);
-            //mut.ReleaseMutex();
         }
 
+        /**
+        * Name: BlendInAsmInThreadOneParamater
+        * Parameter: index of the first byte that is going to be handled by the blending function        * 
+        * Calculates byte array range that the blending function is going to work on
+        *
+        */
         unsafe async private void BlendInAsmInThreadOneParamater(object obj)
         {
             int i = (int)obj;
-            //mut.WaitOne();
-            //Monitor.Enter(imageByteArray3);
+
             byte* firstByte1;
             byte* lastByte1;
             fixed (byte* fb1 = &imageByteArray4[i]) { firstByte1 = fb1; };
             fixed (byte* lb1 = &imageByteArray4[i + bytes]) { lastByte1 = lb1; };
-            //Monitor.Exit(imageByteArray3);
 
             byte* firstByte2;
             byte* lastByte2;
-
-            //Monitor.Enter(imageByteArray2);
             fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
             fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
 
             BlendInAsm(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
-            //Monitor.Exit(imageByteArray2);
-            //mut.ReleaseMutex();
         }
 
 
-       
 
+        /**
+        * Name: pictureBox1_Click
+        * 
+        */
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
         }
-
+        /**
+        * Name: pictureBox1_Click
+        * 
+        */
         private void pictureBox3_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void pictureBox5_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        /**
+        * Name: trackBar2_Scroll
+        * Handles the thread trackbar and sets the THREADS variable accordingly
+        * 
+        */
         private void trackBar2_Scroll(object sender, EventArgs e)
         {
             THREADS = trackBar2.Value;
             textBox4.Text = ("Number of threads: " + THREADS);
         }
 
+        /**
+        * Name: textBox3_TextChanged
+        * 
+        */
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
 
         }
-
+        /**
+        * Name: button5_Click
+        * Used to generate statistical data to be used in histogram creation
+        * and exports it to a .txt file.
+        * 
+        */
         private void button5_Click(object sender, EventArgs e)
         {
             if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
@@ -384,6 +428,13 @@ namespace JA_projekt
             }
         }
 
+        /**
+        * Name: GenerateData
+        * Parameters: threadAmount - amount of threads that the data is generated for
+        * Creates a String with statistical data.
+        * String Formula: threadAmount ASMtime CppTime
+        *      
+        */
         private string GenerateData(int  threadAmount)
         {
             String data = "";

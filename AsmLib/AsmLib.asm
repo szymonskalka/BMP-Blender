@@ -6,7 +6,7 @@
 ; Data: 11.02.2024 Semestr 5 Rok II Skalka Szymon
 ; Wersja 1.0
 ;
-; This is the .asm exported function
+; This is the ASM exported function
 ;
 ; -------------------------------------------------------------------------
 .386
@@ -34,6 +34,13 @@ ret
 
 DllEntry ENDP
 
+; Name: BlendInAsm
+; Parameters: 4 pointers and the alpha blending value (0-255).
+; Pointing to first and last byte in each imageArray.
+; No output parameters - all operations done on the first array pointers
+; Registers: eax, ebx, ecx, edx\
+; Flags: TODO
+;
 
 BlendInAsm proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
     
