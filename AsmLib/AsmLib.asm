@@ -65,7 +65,6 @@ BlendInAsm proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2:
 
 Calculate:
 
-    ;TODO: after the first array element value of [byte1] is always 0
 
     mov ecx, dword ptr [byte1] 
     mov al, [ecx]

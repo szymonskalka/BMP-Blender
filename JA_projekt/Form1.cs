@@ -419,7 +419,7 @@ namespace JA_projekt
                             outputFile.WriteLine(line);
                     }
                     textBox1.Text = ("Finished testing, data successfully generated.");
-                    textBox2.Text = ("File saved in My Documents as data.txt");
+                    textBox2.Text = ("File saved in My Documents as data.txt.");
 
 
 
