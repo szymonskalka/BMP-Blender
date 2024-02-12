@@ -48,7 +48,8 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
@@ -59,7 +60,8 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll")]
+        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll")]
+        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll")]
         unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);
