@@ -5,6 +5,7 @@ VisualStudioVersion = 16.0.34114.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JA_projekt", "JA_projekt\JA_projekt.csproj", "{00312994-3309-4FD5-A12D-E0E4BE1AB816}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A6F33426-E429-4439-9A6C-8A5564950967} = {A6F33426-E429-4439-9A6C-8A5564950967}
 		{E98C3FBF-5265-44D8-837B-589EB5C2788E} = {E98C3FBF-5265-44D8-837B-589EB5C2788E}
 	EndProjectSection
 EndProject
@@ -24,8 +25,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|Any CPU.Build.0 = Debug|x86
-		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x64.ActiveCfg = Debug|x86
-		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x64.Build.0 = Debug|x86
+		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x64.ActiveCfg = Debug|x64
+		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x64.Build.0 = Debug|x64
 		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x86.ActiveCfg = Debug|x86
 		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Debug|x86.Build.0 = Debug|x86
 		{00312994-3309-4FD5-A12D-E0E4BE1AB816}.Release|Any CPU.ActiveCfg = Release|Any CPU

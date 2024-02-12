@@ -26,7 +26,6 @@ using System.Threading;
 using System.Numerics;
 using System.Diagnostics;
 
-
 namespace JA_projekt
 {
     public partial class Form1 : Form
@@ -49,7 +48,7 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
@@ -60,7 +59,7 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        [DllImport("AsmLib.dll")]
+        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll")]
         unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);

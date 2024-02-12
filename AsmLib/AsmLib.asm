@@ -9,106 +9,95 @@
 ; This is the ASM exported function
 ;
 ; -------------------------------------------------------------------------
-.386
-.MODEL FLAT, STDCALL
-
-OPTION CASEMAP:NONE
 
 .DATA
 
-alpha dd 0
-lastbyte1 dd 0
-lastbyte2 dd 0
-alpharemainder dd 0
+alpha dq 0
+lastbyte1 dq 0
+lastbyte2 dq 0
+alpharemainder dq 0
 
-byte1 dd 0
-byte2 dd 0
-newByte dd 0
+byte1 dq 0
+byte2 dq 0
+newByte dq 0
 
 .CODE
 
-DllEntry PROC hInstDLL:DWORD, reason:DWORD, reserved1:DWORD
-
-mov	eax, 1 	;TRUE
-ret
-
-DllEntry ENDP
 
 ; Name: BlendInAsm
 ; Parameters: 4 pointers and the alpha blending value (0-255).
 ; Pointing to first and last byte in each imageArray.
 ; No output parameters - all operations done on the first array pointers
-; Registers: eax, ebx, ecx, edx\
+; Registers: rax, rbx, rcx, rdx\
 ; Flags: TODO
 ;
 
-BlendInAsm proc firstByte1: byte , lastByte1: byte, firstByte2: byte, lastByte2: byte, ALPHA: byte
+BlendInAsm proc 
     
     ;load parameters to variables
-    mov eax, dword ptr [lastByte1] 
-    mov lastbyte1, eax
-    mov eax, dword ptr [lastByte2] 
-    mov lastbyte2, eax
-    mov eax, dword ptr [firstByte1] 
-    mov byte1, eax
-    mov eax, dword ptr [firstByte2] 
-    mov byte2, eax
-    mov dl, ALPHA
-    movzx edx, dl
-    mov alpha, edx
+    mov rax, rcx
+    mov byte1, rax
+    mov rax, rdx
+    mov lastbyte1, rax
+    mov rax, r8
+    mov byte2, rax
+    mov rax, r9
+    mov lastbyte2, rax   
+    mov rdx, qword ptr[rbp + 48]
+    movzx rdx, dl
+    mov alpha, rdx
     mov al, 255
     sub al, dl
-    movzx eax, al
-    mov alpharemainder, eax
+    movzx rax, al
+    mov alpharemainder, rax
 
     
 
 Calculate:
 
+    mov rcx, qword ptr [byte1] 
+    mov al, [rcx]
+    mov al, [rcx]
+    movzx rax, al ; load first image byte to rax
+    mov rcx, alpharemainder 
+    mul rcx ; multiply by remainder of alpha
+    mov rbx , rax ; store first image byte to rbx
 
-    mov ecx, dword ptr [byte1] 
-    mov al, [ecx]
-    movzx eax, al ; load first image byte to eax
-    mov ecx, alpharemainder 
-    mul ecx ; multiply by remainder of alpha
-    mov ebx , eax ; store first image byte to ebx
-
-    mov ecx, dword ptr [byte2] 
-    mov al, [ecx]
-    movzx eax, al ; load second image byte to eax
-    mov ecx, alpha
-    mul ecx ; multiply by alpha
-    add eax, ebx ; add byte1 to byte2
-    mov ecx, 255 ; load 255 for diving
-    div ecx ; get blended byte value
-    mov newByte, eax
+    mov rcx, qword ptr [byte2] 
+    mov al, [rcx]
+    movzx rax, al ; load second image byte to rax
+    mov rcx, alpha
+    mul rcx ; multiply by alpha
+    add rax, rbx ; add byte1 to byte2
+    mov rcx, 255 ; load 255 for diving
+    div rcx ; get blended byte value
+    mov newByte, rax
 
 
-    mov ecx, dword ptr [byte1] 
-    nop
-    mov eax, newByte
-    mov byte ptr [ecx], al ; save blended value to pointer of imageByteArray4[]
+    mov rcx, qword ptr [byte1] 
+    mov rax, newByte
+    mov byte ptr [rcx], al ; save blended value to pointer of imageByteArray4[]
 
    
     jmp Check
-
+    
 Check: 
-    mov eax, byte1
-    mov ebx, lastbyte1
-    cmp eax, ebx ; compare current byte and last byte in array
+    mov rax, byte1
+    mov rbx, lastbyte1
+    cmp rax, rbx ; compare current byte and last byte in array
     JB Increment ; if less  increment pointers
-    jmp Finished ; finish is last byte is reached and blended
+    jmp Finished ; finish if last byte is reached and blended
    
     
 
 Increment:
-    mov ebx, byte1 ; load pointers of first     
-    inc ebx ; increment     
-    mov byte1, ebx ; save to variables
+    mov rbx, byte1 ; load pointers of first     
+    inc rbx ; increment     
+    mov byte1, rbx ; save to variables
 
-    mov ebx, byte2 ; same for second image bytes
-    inc ebx
-    mov byte2, ebx
+    mov rbx, byte2 ; same for second image bytes
+    inc rbx
+    mov byte2, rbx
 
     jmp Calculate ; return to Calculating
 
@@ -119,6 +108,5 @@ Finished:
     ret
 
 BlendInAsm endp
-
-END DllEntry
+end
 ;-------------------------------------------------------------------------
