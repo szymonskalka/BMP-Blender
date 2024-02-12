@@ -12,14 +12,17 @@
 
 .DATA
 
-alpha dq 0
-lastbyte1 dq 0
-lastbyte2 dq 0
-alpharemainder dq 0
 
-byte1 dq 0
-byte2 dq 0
-newByte dq 0
+byte1 dq 0 ; byte of the first array
+byte2 dq 0 ; byte of the second array
+lastbyte1 dq 0 ; last byte of the first array
+lastbyte2 dq 0 ; last byte of the second array
+
+newByte dq 0 ; new byte thats going to replace the first array byte
+
+
+alpha dq 0 ; blending proportion variable (0-255)
+alpharemainder dq 0 ; remainder of the  blending proportion variable (255 - alpha)
 
 .CODE
 
@@ -31,7 +34,6 @@ newByte dq 0
 ; Registers: rax, rbx, rcx, rdx\
 ; Flags: TODO
 ;
-
 BlendInAsm proc 
     
     ;load parameters to variables
@@ -49,9 +51,7 @@ BlendInAsm proc
     mov al, 255
     sub al, dl
     movzx rax, al
-    mov alpharemainder, rax
-
-    
+    mov alpharemainder, rax   
 
 Calculate:
 
@@ -86,9 +86,7 @@ Check:
     mov rbx, lastbyte1
     cmp rax, rbx ; compare current byte and last byte in array
     JB Increment ; if less  increment pointers
-    jmp Finished ; finish if last byte is reached and blended
-   
-    
+    jmp Finished ; finish if last byte is reached and blended 
 
 Increment:
     mov rbx, byte1 ; load pointers of first     
@@ -101,11 +99,8 @@ Increment:
 
     jmp Calculate ; return to Calculating
 
-
-    
-
 Finished:
-    ret
+    ret ; exist procedure
 
 BlendInAsm endp
 end
