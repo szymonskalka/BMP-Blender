@@ -41,6 +41,12 @@ namespace JA_projekt
         public byte[] imageByteArray4;
 
 
+        
+        #if DEBUG
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #else
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #endif
         /**
         * Name: BlendImagesInCpp
         * Paramters: 4 pointers and the alpha blending value (0-255).
@@ -48,11 +54,15 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
+        
+        #if DEBUG
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #else
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #endif  
         /**
         * Name: BlendInAsm
         * Paramters: 4 pointers and the alpha blending value (0-255).
@@ -60,18 +70,11 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll")]
-        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll")]
         unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
                                                  byte* byteArray2First, byte* byteArray2Last,
                                                  int alpha);
 
-        /**
-        * Name: ImageToByteArray
-        * Paramters: Image that is going to be converted to byte array
-        * Output: byte array created from the image
-        *
-        */
+        
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
         {
             using (MemoryStream memstr = new MemoryStream())
@@ -213,7 +216,7 @@ namespace JA_projekt
         */
         unsafe private void button3_Click(object sender, EventArgs e)
         {      
-            if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
+            if ( (imageByteArray1?.Any() ?? false) && (imageByteArray2?.Any() ?? false) )
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
@@ -252,7 +255,15 @@ namespace JA_projekt
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
-            }        
+                else
+                {
+                    textBox2.Text = ("The images must be the same size");
+                }
+            }
+            else
+            {
+                textBox1.Text = ("Upload 2 images.");
+            }
         }
 
 
@@ -263,7 +274,7 @@ namespace JA_projekt
         */
         unsafe private void button4_Click(object sender, EventArgs e)
         {
-            if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
+            if ((imageByteArray1?.Any() ?? false) && (imageByteArray2?.Any() ?? false))
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
@@ -303,7 +314,16 @@ namespace JA_projekt
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
+                else
+                {
+                    textBox2.Text = ("The images must be the same size");
+                }
             }
+            else
+            {
+                textBox1.Text = ("Upload 2 images.");
+            }
+        
         }
 
         /**

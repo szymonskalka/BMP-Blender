@@ -29,12 +29,11 @@
 void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
 	std::byte* byteArray2First, std::byte* byteArray2Last,
 	int alpha) {
-	while (byteArray1First != byteArray1Last) {
+	while (byteArray1First <= byteArray1Last) {
 		*byteArray1First = (std::byte)(((int)*byteArray1First * (255 - alpha) + (int)*byteArray2First * alpha) / 255);
 		byteArray1First++;
 		byteArray2First++;
 	}
-	*byteArray1Last = (std::byte)(((int)*byteArray1Last * (255 - alpha) + (int)*byteArray2Last * alpha) / 255);
 }
 
 /**
