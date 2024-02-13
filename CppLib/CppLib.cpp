@@ -17,7 +17,22 @@
 #include <cstddef>
 #include <iostream>
 
+#include <stdio.h>
+#include <intrin.h>
 
+#pragma intrinsic(__rdtsc)
+
+
+/**
+* Name: Ticks
+* Output Parameters: Amount of cpu ticks.
+*
+*/
+uint64_t Ticks() {
+	uint64_t i;
+	i = __rdtsc();
+	return i;
+}
 
 /**
 * Name: BlendImages
@@ -44,4 +59,12 @@ extern "C" __declspec(dllexport)  void BlendImagesInCpp(std::byte * byteArray1Fi
 	std::byte * byteArray2First, std::byte * byteArray2Last,
 	int alpha) {
 	return BlendImages(byteArray1First, byteArray1Last, byteArray2First, byteArray2Last, alpha);
+}
+
+/**
+* Export definition
+*
+*/
+extern "C" __declspec(dllexport)  uint64_t GetTicks() {
+	return Ticks();
 }

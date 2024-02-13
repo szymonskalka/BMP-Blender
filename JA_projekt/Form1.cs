@@ -57,6 +57,17 @@ namespace JA_projekt
         unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
+        #if DEBUG
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #else
+        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+#endif
+        /**
+        * Name: GetTicks
+        * Output Parameters: Amount of cpu ticks.
+        *
+        */
+        public static extern  UInt64 GetTicks();
         
         #if DEBUG
             [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -220,9 +231,7 @@ namespace JA_projekt
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
-                    Stopwatch time = new Stopwatch();
-                    time.Reset();
-                    time.Start();
+                    UInt64 start = GetTicks();
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
 
@@ -249,8 +258,8 @@ namespace JA_projekt
                         thr.Join();
                         thr.Abort();
                     }
-                    time.Stop();
-                    textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
+                    UInt64 stop = GetTicks() - start;
+                    textBox1.Text = ("C++ blending took " + stop + " cycles.");
 
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -278,9 +287,7 @@ namespace JA_projekt
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
-                    Stopwatch time = new Stopwatch();
-                    time.Reset();
-                    time.Start();
+                    UInt64 start = GetTicks();
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
 
@@ -308,8 +315,8 @@ namespace JA_projekt
                         thr.Join();
                         thr.Abort();
                     }
-                    time.Stop();
-                    textBox2.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
+                    UInt64 stop = GetTicks() - start;
+                    textBox2.Text = ("ASM blending took " + stop + " cycles.");
                     
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -462,9 +469,7 @@ namespace JA_projekt
         private string GenerateData(int  threadAmount)
         {
             String data = "";
-            Stopwatch time = new Stopwatch();
-            time.Reset();
-            time.Start();
+            UInt64 start = GetTicks();
             imageByteArray4 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray4, 0);
 
@@ -492,14 +497,12 @@ namespace JA_projekt
                 thr.Join();
                 thr.Abort();
             }
-            time.Stop();
+            UInt64 stop = GetTicks() - start;
 
-            data += (threadAmount + " " + time.ElapsedMilliseconds);
+            data += (threadAmount + " " + stop);
 
 
-            time = new Stopwatch();
-            time.Reset();
-            time.Start();
+            start = GetTicks();
             imageByteArray3 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray3, 0);
 
@@ -527,8 +530,8 @@ namespace JA_projekt
                 thr.Join();
                 thr.Abort();
             }
-            time.Stop();
-            data += (" " + time.ElapsedMilliseconds);
+            stop = GetTicks() - start;
+            data += (" " + stop);
 
             // SAVE TO FILE HERE
             return data;

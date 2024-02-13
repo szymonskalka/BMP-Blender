@@ -35,8 +35,6 @@ alpharemainder dq 0 ; remainder of the  blending proportion variable (255 - alph
 ; Flags: TODO
 ;
 BlendInAsm proc 
-    
-    push rbp
 
     ;load parameters to variables
     mov byte1, rcx
@@ -98,7 +96,6 @@ Increment:
     jmp Calculate ; return to Calculating
 
 Finished:
-    pop rbp
     ret ; exist procedure
 
 BlendInAsm endp
