@@ -37,17 +37,35 @@ alpharemainder dq 0 ; remainder of the  blending proportion variable (255 - alph
 BlendInAsm proc 
 
     ;load parameters to variables
+
+    push rax
+    push rbx
+    push rcx
+    push rdx
+    push rbp
+    push r9
+    push r8
+    
+    
+
     mov byte1, rcx
     mov lastbyte1, rdx
     mov byte2, r8
+    pop r8
     mov lastbyte2, r9 
+    pop r9
     mov rdx, qword ptr[rbp + 48]
+    pop rbp
     movzx rdx, dl
     mov alpha, rdx
     mov al, 255
     sub al, dl
     movzx rax, al
     mov alpharemainder, rax   
+
+    
+   
+    
 
 Calculate:
 
@@ -95,7 +113,12 @@ Increment:
 
     jmp Calculate ; return to Calculating
 
-Finished:
+Finished:    
+   
+    pop rdx
+    pop rcx
+    pop rbx
+    pop rax
     ret ; exist procedure
 
 BlendInAsm endp

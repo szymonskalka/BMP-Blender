@@ -178,7 +178,7 @@ namespace JA_projekt
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(255, 20);
             this.textBox1.TabIndex = 55;
-            this.textBox1.Text = "C++ blending took 0ms.";
+            this.textBox1.Text = "C++ blending took";
             // 
             // contextMenuStrip1
             // 
@@ -191,7 +191,7 @@ namespace JA_projekt
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(255, 20);
             this.textBox2.TabIndex = 57;
-            this.textBox2.Text = "ASM blending took 0ms.";
+            this.textBox2.Text = "ASM blending took";
             // 
             // trackBar2
             // 

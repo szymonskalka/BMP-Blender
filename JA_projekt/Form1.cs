@@ -10,6 +10,8 @@
 //
 // -------------------------------------------------------------------------
 
+//#define USEMILISECONDS  // true = miliseconds, false = ticks
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,22 +28,24 @@ using System.Threading;
 using System.Numerics;
 using System.Diagnostics;
 
+
+
+
 namespace JA_projekt
 {
     public partial class Form1 : Form
     {
-        public int ALPHA;
-        public int THREADS;
-        public List<Thread> threads;
-        Mutex mut;
-        int bytes;
-        public byte[] imageByteArray1;
-        public byte[] imageByteArray2;
-        public byte[] imageByteArray3;
-        public byte[] imageByteArray4;
+
+        public int ALPHA; // pixel multiplication value
+        public int THREADS; // amount of threads
+        public List<Thread> threads; // thread vector
+        int bytes; // amount of bytes that a single thread is going to work on
+        public byte[] imageByteArray1; // byte array of first uploaded image
+        public byte[] imageByteArray2; // byte array of second uploaded image
+        public byte[] imageByteArray3; // output byte array created by C++ dll
+        public byte[] imageByteArray4; // output byte array created by ASM dll
 
 
-        
         #if DEBUG
             [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #else
@@ -60,8 +64,8 @@ namespace JA_projekt
         #if DEBUG
             [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #else
-        [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-#endif
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        #endif
         /**
         * Name: GetTicks
         * Output Parameters: Amount of cpu ticks.
@@ -121,7 +125,6 @@ namespace JA_projekt
             THREADS = 1;
             trackBar1.Value = 128;
             threads = new List<Thread>();
-            mut = new Mutex();
             bytes = 0;
             imageByteArray1 = null;
             imageByteArray2 = null;
@@ -231,6 +234,9 @@ namespace JA_projekt
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
+                    Stopwatch time = new Stopwatch();
+                    time.Reset();
+                    time.Start();
                     UInt64 start = GetTicks();
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
@@ -238,28 +244,34 @@ namespace JA_projekt
                     bytes = (int)Math.Floor((double)((imageByteArray3.Length-1) / THREADS));
 
                     threads.Clear();
-                    List<int> index = new List<int>();
-                    index.Add(0);               
+                    List<int> byteIndex = new List<int>();
+                    byteIndex.Add(0);               
                     for (int i = 0; i < THREADS-1; i++)
                     {                       
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                        threads[i].Start(index[i]);
-                        index.Add(index[i] + bytes + 1);                      
+                        threads[i].Start(byteIndex[i]);
+                        byteIndex.Add(byteIndex[i] + bytes + 1);                      
                     }
                                                                     
-                    if (index.Last() + bytes > imageByteArray3.Length - 1)
-                        index[index.Count-1] = imageByteArray3.Length - 1 - bytes;    
+                    if (byteIndex.Last() + bytes > imageByteArray3.Length - 1)
+                        byteIndex[byteIndex.Count-1] = imageByteArray3.Length - 1 - bytes;    
                     
                     threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                    threads.Last().Start(index.Last());
+                    threads.Last().Start(byteIndex.Last());
                    
                     foreach (Thread thr in threads)
                     {
                         thr.Join();
                         thr.Abort();
                     }
+                    time.Stop();
                     UInt64 stop = GetTicks() - start;
-                    textBox1.Text = ("C++ blending took " + stop + " cycles.");
+                        
+                    #if USEMILISECONDS
+                        textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");
+                    #else
+                        textBox1.Text = ("C++ blending took " + time.ElapsedMilliseconds + "ms.");textBox1.Text = ("C++ blending took " + stop + " cycles.");
+                    #endif
 
                     pictureBox3.Image = ByteArrayToImage(imageByteArray3);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -287,6 +299,9 @@ namespace JA_projekt
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
+                    Stopwatch time = new Stopwatch();
+                    time.Reset();
+                    time.Start();
                     UInt64 start = GetTicks();
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
@@ -294,30 +309,36 @@ namespace JA_projekt
                     bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
 
                     threads.Clear();
-                    List<int> index = new List<int>();
-                    index.Add(0);
+                    List<int> byteIndex = new List<int>();
+                    byteIndex.Add(0);
                     
                     for (int i = 0; i < THREADS - 1; i++)
                     {
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                        threads[i].Start(index[i]);
-                        index.Add(index[i] + bytes + 1);
+                        threads[i].Start(byteIndex[i]);
+                        byteIndex.Add(byteIndex[i] + bytes + 1);
                     }
 
-                    if (index.Last() + bytes > imageByteArray4.Length - 1)
-                        index[index.Count - 1] = imageByteArray4.Length - 1 - bytes;
+                    if (byteIndex.Last() + bytes > imageByteArray4.Length - 1)
+                        byteIndex[byteIndex.Count - 1] = imageByteArray4.Length - 1 - bytes;
 
                     threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                    threads.Last().Start(index.Last());
+                    threads.Last().Start(byteIndex.Last());
 
                     foreach (Thread thr in threads)
                     {
                         thr.Join();
                         thr.Abort();
                     }
+                    time.Stop();
                     UInt64 stop = GetTicks() - start;
-                    textBox2.Text = ("ASM blending took " + stop + " cycles.");
-                    
+
+                    #if USEMILISECONDS
+                        textBox2.Text = ("ASM blending took " + time.ElapsedMilliseconds + "ms.");
+                    #else
+                        textBox2.Text = ("ASM blending took " + stop + " cycles.");
+                    #endif
+
                     pictureBox3.Image = ByteArrayToImage(imageByteArray4);
                     pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
@@ -335,7 +356,7 @@ namespace JA_projekt
 
         /**
         * Name: BlendInCppInThreadOneParamater
-        * Parameter: index of the first byte that is going to be handled by the blending function        * 
+        * Parameter: byteIndex of the first byte that is going to be handled by the blending function        * 
         * Calculates byte array range that the blending function is going to work on
         *
         */
@@ -357,7 +378,7 @@ namespace JA_projekt
 
         /**
         * Name: BlendInAsmInThreadOneParamater
-        * Parameter: index of the first byte that is going to be handled by the blending function        * 
+        * Parameter: byteIndex of the first byte that is going to be handled by the blending function        * 
         * Calculates byte array range that the blending function is going to work on
         *
         */
@@ -424,7 +445,7 @@ namespace JA_projekt
         */
         private void button5_Click(object sender, EventArgs e)
         {
-            if (!(imageByteArray1.Equals(null) || imageByteArray2.Equals(null)))
+            if ((imageByteArray1?.Any() ?? false) && (imageByteArray2?.Any() ?? false))
             {
                 if (imageByteArray1.Length == imageByteArray2.Length)
                 {
@@ -440,7 +461,8 @@ namespace JA_projekt
 
                     string docPath =
                     Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "data.txt")))
+                    using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath,
+                        ("data" + DateTime.Now.ToString("HHmmss") + ".txt"))))
                     {
                         //text saved as nThreads asmTime cppTime
                         foreach (string line in output)
@@ -448,14 +470,15 @@ namespace JA_projekt
                     }
                     textBox1.Text = ("Finished testing, data successfully generated.");
                     textBox2.Text = ("File saved in My Documents as data.txt.");
-
-
-
                 }
                 else
                 {
-                    //TODO: images formats not matching error message
+                    textBox2.Text = ("The images must be the same size");
                 }
+            }
+            else
+            {
+                textBox1.Text = ("Upload 2 images.");
             }
         }
 
@@ -468,6 +491,9 @@ namespace JA_projekt
         */
         private string GenerateData(int  threadAmount)
         {
+            Stopwatch time = new Stopwatch();
+            time.Reset();
+            time.Start();
             String data = "";
             UInt64 start = GetTicks();
             imageByteArray4 = new byte[imageByteArray1.Length];
@@ -476,32 +502,40 @@ namespace JA_projekt
             bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / threadAmount));
 
             threads.Clear();
-            List<int> index = new List<int>();
-            index.Add(0);
+            List<int> byteIndex = new List<int>();
+            byteIndex.Add(0);
 
             for (int i = 0; i < threadAmount - 1; i++)
             {
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                threads[i].Start(index[i]);
-                index.Add(index[i] + bytes + 1);
+                threads[i].Start(byteIndex[i]);
+                byteIndex.Add(byteIndex[i] + bytes + 1);
             }
 
-            if (index.Last() + bytes > imageByteArray4.Length - 1)
-                index[index.Count - 1] = imageByteArray4.Length - 1 - bytes;
+            if (byteIndex.Last() + bytes > imageByteArray4.Length - 1)
+                byteIndex[byteIndex.Count - 1] = imageByteArray4.Length - 1 - bytes;
 
             threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-            threads.Last().Start(index.Last());
+            threads.Last().Start(byteIndex.Last());
 
             foreach (Thread thr in threads)
             {
                 thr.Join();
                 thr.Abort();
             }
+
+            time.Stop();
             UInt64 stop = GetTicks() - start;
 
-            data += (threadAmount + " " + stop);
+            #if USEMILISECONDS
+                data += (threadAmount + " " + time.ElapsedMilliseconds);  
+            #else
+                data += (threadAmount + " " + stop);
+            #endif
 
-
+            time = new Stopwatch();
+            time.Reset();
+            time.Start();
             start = GetTicks();
             imageByteArray3 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray3, 0);
@@ -509,27 +543,29 @@ namespace JA_projekt
             bytes = (int)Math.Floor((double)((imageByteArray3.Length - 1) / threadAmount));
 
             threads.Clear();
-            index = new List<int>();
-            index.Add(0);
+            byteIndex = new List<int>();
+            byteIndex.Add(0);
 
             for (int i = 0; i < threadAmount - 1; i++)
             {
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                threads[i].Start(index[i]);
-                index.Add(index[i] + bytes + 1);
+                threads[i].Start(byteIndex[i]);
+                byteIndex.Add(byteIndex[i] + bytes + 1);
             }
 
-            if (index.Last() + bytes > imageByteArray3.Length - 1)
-                index[index.Count - 1] = imageByteArray3.Length - 1 - bytes;
+            if (byteIndex.Last() + bytes > imageByteArray3.Length - 1)
+                byteIndex[byteIndex.Count - 1] = imageByteArray3.Length - 1 - bytes;
 
             threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-            threads.Last().Start(index.Last());
+            threads.Last().Start(byteIndex.Last());
 
             foreach (Thread thr in threads)
             {
                 thr.Join();
                 thr.Abort();
             }
+            time.Stop();
+            //data += (" " + time.ElapsedMilliseconds);
             stop = GetTicks() - start;
             data += (" " + stop);
 
