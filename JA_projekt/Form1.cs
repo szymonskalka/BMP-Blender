@@ -47,9 +47,11 @@ namespace JA_projekt
 
 
         #if DEBUG
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #else
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #endif
         /**
         * Name: BlendImagesInCpp
@@ -62,9 +64,12 @@ namespace JA_projekt
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
         #if DEBUG
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+
         #else
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #endif
         /**
         * Name: GetTicks
@@ -72,12 +77,14 @@ namespace JA_projekt
         *
         */
         public static extern  UInt64 GetTicks();
-        
+
         #if DEBUG
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("AsmLib.dll")]
         #else
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        #endif  
+            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("AsmLib.dll")]
+        #endif
         /**
         * Name: BlendInAsm
         * Paramters: 4 pointers and the alpha blending value (0-255).
@@ -113,6 +120,8 @@ namespace JA_projekt
                 memstr.Position = 0;
                 return Image.FromStream(memstr);
             }
+
+
         }
         /**
         * Name: Form1
@@ -385,7 +394,7 @@ namespace JA_projekt
         unsafe async private void BlendInAsmInThreadOneParamater(object obj)
         {
             int i = (int)obj;
-
+           
             byte* firstByte1;
             byte* lastByte1;
             fixed (byte* fb1 = &imageByteArray4[i]) { firstByte1 = fb1; };

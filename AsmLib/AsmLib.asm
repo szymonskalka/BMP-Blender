@@ -61,8 +61,7 @@ BlendInAsm proc
     mov al, 255
     sub al, dl
     movzx rax, al
-    mov alpharemainder, rax   
-
+    mov alpharemainder, rax  
     
    
     
@@ -113,13 +112,16 @@ Increment:
 
     jmp Calculate ; return to Calculating
 
+
+
+
 Finished:    
    
     pop rdx
     pop rcx
     pop rbx
     pop rax
-    ret ; exist procedure
+    ret ; exit procedure
 
 BlendInAsm endp
 end
