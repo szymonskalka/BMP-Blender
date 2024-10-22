@@ -15,9 +15,8 @@
 
 byte1 dq 0 ; byte of the first array
 byte2 dq 0 ; byte of the second array
-lastbyte1 dq 0 ; last byte of the first array
-lastbyte2 dq 0 ; last byte of the second array
-
+lengthOfArray dq 0
+index  dq 0
 newByte dq 0 ; new byte thats going to replace the first array byte
 
 
@@ -42,20 +41,18 @@ BlendInAsm proc
     push rbx
     push rcx
     push rdx
-    push rbp
     push r9
     push r8
     
     
 
     mov byte1, rcx
-    mov lastbyte1, rdx
-    mov byte2, r8
+    mov byte2, rdx
+    mov lengthOfArray, r8
     pop r8
-    mov lastbyte2, r9 
+    mov alpha, r9 
     pop r9
-    mov rdx, qword ptr[rbp + 48]
-    pop rbp
+    mov rdx, alpha
     movzx rdx, dl
     mov alpha, rdx
     mov al, 255
@@ -63,13 +60,19 @@ BlendInAsm proc
     movzx rax, al
     mov alpharemainder, rax  
     
-   
-    
+
+    mov rax, lengthOfArray
+    dec rax
+    mov lengthOfArray, rax
+
+    mov rax, 0
+    mov index, rax
+
+    jmp Calculate
 
 Calculate:
 
     mov rcx, qword ptr [byte1] 
-    mov al, [rcx]
     mov al, [rcx]
     movzx rax, al ; load first image byte to rax
     mov rcx, alpharemainder 
@@ -93,10 +96,13 @@ Calculate:
 
    
     jmp Check
+
+
+
     
 Check: 
-    mov rax, byte1
-    mov rbx, lastbyte1
+    mov rax, index
+    mov rbx, lengthOfArray
     cmp rax, rbx ; compare current byte and last byte in array
     JB Increment ; if less  increment pointers
     jmp Finished ; finish if last byte is reached and blended 
@@ -109,6 +115,10 @@ Increment:
     mov rbx, byte2 ; same for second image bytes
     inc rbx
     mov byte2, rbx
+
+    mov rbx, index ; same for second image bytes
+    inc rbx
+    mov index, rbx
 
     jmp Calculate ; return to Calculating
 

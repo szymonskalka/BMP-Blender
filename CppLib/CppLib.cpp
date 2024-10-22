@@ -51,6 +51,22 @@ void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
 	}
 }
 
+void  BlendImages2(std::byte* byteArray1First,	std::byte* byteArray2First, int length,	int alpha) {
+	for (int i = 0; i < length; i++) {
+		*byteArray1First = (std::byte)(((int)*byteArray1First * (255 - alpha) + (int)*byteArray2First * alpha) / 255);
+		byteArray1First++;
+		byteArray2First++;
+	}
+}
+
+
+/**
+* Export definition
+*
+*/
+extern "C" __declspec(dllexport)  void BlendImagesInCpp2(std::byte * byteArray1First, std::byte * byteArray2First, int length, int alpha) {
+	return BlendImages2(byteArray1First, byteArray2First, length, alpha);
+}
 /**
 * Export definition
 *  

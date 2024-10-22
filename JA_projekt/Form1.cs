@@ -46,12 +46,29 @@ namespace JA_projekt
         public byte[] imageByteArray4; // output byte array created by ASM dll
 
 
-        #if DEBUG
-            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        #else
+    #if DEBUG
+                //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+                [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    #else
             //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
             [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+    #endif
+        /**
+        * Name: BlendImagesInCpp
+        * Paramters: 4 pointers and the alpha blending value (0-255).
+        * Pointing to first and last byte in each imageArray.
+        * No output parameters - all operations done on the first array pointers
+        *
+        */
+        unsafe public static extern void BlendImagesInCpp2(byte* byteArray1First, byte* byteArray2First, int length, int alpha);
+
+
+#if DEBUG
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+#else
+        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
         #endif
         /**
         * Name: BlendImagesInCpp
@@ -64,8 +81,8 @@ namespace JA_projekt
                                                           byte* byteArray2First, byte* byteArray2Last,
                                                           int alpha);
         #if DEBUG
-            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-            [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
 
         #else
             //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -79,8 +96,8 @@ namespace JA_projekt
         public static extern  UInt64 GetTicks();
 
         #if DEBUG
-            //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
-            [DllImport("AsmLib.dll")]
+            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
+            //[DllImport("AsmLib.dll")]
         #else
             //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/AsmLib.dll", CallingConvention = CallingConvention.Cdecl)]
             [DllImport("AsmLib.dll")]
@@ -92,9 +109,7 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray1Last,
-                                                 byte* byteArray2First, byte* byteArray2Last,
-                                                 int alpha);
+        unsafe public static extern void BlendInAsm(byte* byteArray1First, byte* byteArray2First, int length, int alpha);
 
         
         public byte[] ImageToByteArray(System.Drawing.Image imageIn)
@@ -250,11 +265,12 @@ namespace JA_projekt
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
 
-                    bytes = (int)Math.Floor((double)((imageByteArray3.Length-1) / THREADS));
 
+                    /*
+                    bytes = (int)Math.Floor((double)((imageByteArray3.Length-1) / THREADS));
                     threads.Clear();
                     List<int> byteIndex = new List<int>();
-                    byteIndex.Add(0);               
+                    byteIndex.Add(54);               
                     for (int i = 0; i < THREADS-1; i++)
                     {                       
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
@@ -267,7 +283,28 @@ namespace JA_projekt
                     
                     threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
                     threads.Last().Start(byteIndex.Last());
-                   
+                    */
+
+                    int length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - 54 ) / THREADS));
+                    int totallength = 54;
+                    threads.Clear();
+                    for (int i = 0; i < THREADS ; i++)
+                    {
+
+
+                        if (totallength + length > imageByteArray3.Length - 1)
+                            length = imageByteArray3.Length - 1 - length * (i);
+
+                        object args = new object[2] { totallength, length};
+                        threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
+                        threads[i].Start(args);
+                        totallength += length;
+                    }
+
+                  
+
+
+
                     foreach (Thread thr in threads)
                     {
                         thr.Join();
@@ -315,11 +352,12 @@ namespace JA_projekt
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
 
-                    bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
 
+                    /*
+                    bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
                     threads.Clear();
                     List<int> byteIndex = new List<int>();
-                    byteIndex.Add(0);
+                    byteIndex.Add(54);
                     
                     for (int i = 0; i < THREADS - 1; i++)
                     {
@@ -333,6 +371,26 @@ namespace JA_projekt
 
                     threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
                     threads.Last().Start(byteIndex.Last());
+
+                    */
+
+
+                    int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - 54) / THREADS));
+                    int totallength = 54;
+                    threads.Clear();
+                    for (int i = 0; i < THREADS; i++)
+                    {
+
+
+                        if (totallength + length > imageByteArray4.Length - 1)
+                            length = imageByteArray4.Length - 1 - length * (i);
+
+                        object args = new object[2] { totallength, length };
+                        threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
+                        threads[i].Start(args);
+                        totallength += length;
+                    }
+
 
                     foreach (Thread thr in threads)
                     {
@@ -369,20 +427,23 @@ namespace JA_projekt
         * Calculates byte array range that the blending function is going to work on
         *
         */
+        
+
         unsafe async private void BlendInCppInThreadOneParamater(object obj)
         {
-            int i = (int)obj;
+            Array argArray = new object[3];
+            argArray = (Array)obj;
 
+
+            int byteIndex = (int)argArray.GetValue(0);
+            int length = (int)argArray.GetValue(1);
+            byte* actaulfb1;
+            fixed (byte* a = &imageByteArray3[54]) { actaulfb1 = a; };
             byte* firstByte1;
-            byte* lastByte1;
-            fixed (byte* fb1 = &imageByteArray3[i]) { firstByte1 = fb1; };
-            fixed (byte* lb1 = &imageByteArray3[i + bytes]) { lastByte1 = lb1; };
-
             byte* firstByte2;
-            byte* lastByte2;
-            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
-            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
-            BlendImagesInCpp(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            fixed (byte* fb1 = &imageByteArray3[byteIndex]) { firstByte1 = fb1; };
+            fixed (byte* fb2 = &imageByteArray2[byteIndex]) { firstByte2 = fb2; };
+            BlendImagesInCpp2(firstByte1, firstByte2, length, ALPHA);
         }
 
         /**
@@ -392,21 +453,23 @@ namespace JA_projekt
         *
         */
         unsafe async private void BlendInAsmInThreadOneParamater(object obj)
-        {
-            int i = (int)obj;
-           
+        { 
+            Array argArray = new object[3];
+            argArray = (Array)obj;
+
+
+            int byteIndex = (int)argArray.GetValue(0);
+            int length = (int)argArray.GetValue(1);
+            byte* actaulfb1;
+            fixed (byte* a = &imageByteArray4[54]) { actaulfb1 = a; };
             byte* firstByte1;
-            byte* lastByte1;
-            fixed (byte* fb1 = &imageByteArray4[i]) { firstByte1 = fb1; };
-            fixed (byte* lb1 = &imageByteArray4[i + bytes]) { lastByte1 = lb1; };
-
             byte* firstByte2;
-            byte* lastByte2;
-            fixed (byte* fb2 = &imageByteArray2[i]) { firstByte2 = fb2; };
-            fixed (byte* lb2 = &imageByteArray2[i + bytes]) { lastByte2 = lb2; };
-
-            BlendInAsm(firstByte1, lastByte1, firstByte2, lastByte2, ALPHA);
+            fixed (byte* fb1 = &imageByteArray4[byteIndex]) { firstByte1 = fb1; };
+            fixed (byte* fb2 = &imageByteArray2[byteIndex]) { firstByte2 = fb2; };
+            BlendInAsm(firstByte1, firstByte2, length, ALPHA);
         }
+
+        
 
 
 
