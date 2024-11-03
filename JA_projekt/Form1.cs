@@ -265,26 +265,6 @@ namespace JA_projekt
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
 
-
-                    /*
-                    bytes = (int)Math.Floor((double)((imageByteArray3.Length-1) / THREADS));
-                    threads.Clear();
-                    List<int> byteIndex = new List<int>();
-                    byteIndex.Add(54);               
-                    for (int i = 0; i < THREADS-1; i++)
-                    {                       
-                        threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                        threads[i].Start(byteIndex[i]);
-                        byteIndex.Add(byteIndex[i] + bytes + 1);                      
-                    }
-                                                                    
-                    if (byteIndex.Last() + bytes > imageByteArray3.Length - 1)
-                        byteIndex[byteIndex.Count-1] = imageByteArray3.Length - 1 - bytes;    
-                    
-                    threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                    threads.Last().Start(byteIndex.Last());
-                    */
-
                     int length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - 54 ) / THREADS));
                     int totallength = 54;
                     threads.Clear();
@@ -324,12 +304,12 @@ namespace JA_projekt
                 }
                 else
                 {
-                    textBox2.Text = ("The images must be the same size");
+                    MessageBox.Show("The images must be the same size");
                 }
             }
             else
             {
-                textBox1.Text = ("Upload 2 images.");
+                MessageBox.Show("Upload 2 images.");
             }
         }
 
@@ -351,29 +331,6 @@ namespace JA_projekt
                     UInt64 start = GetTicks();
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
-
-
-                    /*
-                    bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / THREADS));
-                    threads.Clear();
-                    List<int> byteIndex = new List<int>();
-                    byteIndex.Add(54);
-                    
-                    for (int i = 0; i < THREADS - 1; i++)
-                    {
-                        threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                        threads[i].Start(byteIndex[i]);
-                        byteIndex.Add(byteIndex[i] + bytes + 1);
-                    }
-
-                    if (byteIndex.Last() + bytes > imageByteArray4.Length - 1)
-                        byteIndex[byteIndex.Count - 1] = imageByteArray4.Length - 1 - bytes;
-
-                    threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                    threads.Last().Start(byteIndex.Last());
-
-                    */
-
 
                     int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - 54) / THREADS));
                     int totallength = 54;
@@ -411,12 +368,12 @@ namespace JA_projekt
                 }
                 else
                 {
-                    textBox2.Text = ("The images must be the same size");
+                    MessageBox.Show("The images must be the same size");
                 }
             }
             else
             {
-                textBox1.Text = ("Upload 2 images.");
+                MessageBox.Show("Upload 2 images.");
             }
         
         }
@@ -540,17 +497,16 @@ namespace JA_projekt
                         foreach (string line in output)
                             outputFile.WriteLine(line);
                     }
-                    textBox1.Text = ("Finished testing, data successfully generated.");
-                    textBox2.Text = ("File saved in My Documents as data.txt.");
+                    MessageBox.Show("Results saved in My Documents as data.txt." , "Data successfully generated." );
                 }
                 else
                 {
-                    textBox2.Text = ("The images must be the same size");
+                    MessageBox.Show("The images must be the same size");
                 }
             }
             else
             {
-                textBox1.Text = ("Upload 2 images.");
+                MessageBox.Show("Upload 2 images.");
             }
         }
 
@@ -563,39 +519,37 @@ namespace JA_projekt
         */
         private string GenerateData(int  threadAmount)
         {
+            String data = "";
+
             Stopwatch time = new Stopwatch();
             time.Reset();
             time.Start();
-            String data = "";
             UInt64 start = GetTicks();
             imageByteArray4 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray4, 0);
 
-            bytes = (int)Math.Floor((double)((imageByteArray4.Length - 1) / threadAmount));
-
+            int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - 54) / THREADS));
+            int totallength = 54;
             threads.Clear();
-            List<int> byteIndex = new List<int>();
-            byteIndex.Add(0);
-
-            for (int i = 0; i < threadAmount - 1; i++)
+            for (int i = 0; i < THREADS; i++)
             {
+
+
+                if (totallength + length > imageByteArray4.Length - 1)
+                    length = imageByteArray4.Length - 1 - length * (i);
+
+                object args = new object[2] { totallength, length };
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-                threads[i].Start(byteIndex[i]);
-                byteIndex.Add(byteIndex[i] + bytes + 1);
+                threads[i].Start(args);
+                totallength += length;
             }
 
-            if (byteIndex.Last() + bytes > imageByteArray4.Length - 1)
-                byteIndex[byteIndex.Count - 1] = imageByteArray4.Length - 1 - bytes;
-
-            threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
-            threads.Last().Start(byteIndex.Last());
 
             foreach (Thread thr in threads)
             {
                 thr.Join();
                 thr.Abort();
             }
-
             time.Stop();
             UInt64 stop = GetTicks() - start;
 
@@ -612,24 +566,25 @@ namespace JA_projekt
             imageByteArray3 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray3, 0);
 
-            bytes = (int)Math.Floor((double)((imageByteArray3.Length - 1) / threadAmount));
-
+            length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - 54) / THREADS));
+            totallength = 54;
             threads.Clear();
-            byteIndex = new List<int>();
-            byteIndex.Add(0);
-
-            for (int i = 0; i < threadAmount - 1; i++)
+            for (int i = 0; i < THREADS; i++)
             {
+
+
+                if (totallength + length > imageByteArray3.Length - 1)
+                    length = imageByteArray3.Length - 1 - length * (i);
+
+                object args = new object[2] { totallength, length };
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-                threads[i].Start(byteIndex[i]);
-                byteIndex.Add(byteIndex[i] + bytes + 1);
+                threads[i].Start(args);
+                totallength += length;
             }
 
-            if (byteIndex.Last() + bytes > imageByteArray3.Length - 1)
-                byteIndex[byteIndex.Count - 1] = imageByteArray3.Length - 1 - bytes;
 
-            threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
-            threads.Last().Start(byteIndex.Last());
+
+
 
             foreach (Thread thr in threads)
             {
@@ -637,9 +592,16 @@ namespace JA_projekt
                 thr.Abort();
             }
             time.Stop();
-            //data += (" " + time.ElapsedMilliseconds);
             stop = GetTicks() - start;
-            data += (" " + stop);
+
+
+
+
+            #if USEMILISECONDS
+                data += (threadAmount + " " + time.ElapsedMilliseconds);  
+            #else
+                data += (threadAmount + " " + stop);
+            #endif
 
             // SAVE TO FILE HERE
             return data;
