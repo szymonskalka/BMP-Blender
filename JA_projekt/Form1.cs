@@ -39,7 +39,6 @@ namespace JA_projekt
         public int ALPHA; // pixel multiplication value
         public int THREADS; // amount of threads
         public List<Thread> threads; // thread vector
-        int bytes; // amount of bytes that a single thread is going to work on
         public byte[] imageByteArray1; // byte array of first uploaded image
         public byte[] imageByteArray2; // byte array of second uploaded image
         public byte[] imageByteArray3; // output byte array created by C++ dll
@@ -149,7 +148,6 @@ namespace JA_projekt
             THREADS = 1;
             trackBar1.Value = 128;
             threads = new List<Thread>();
-            bytes = 0;
             imageByteArray1 = null;
             imageByteArray2 = null;
             imageByteArray3 = null;
@@ -265,25 +263,22 @@ namespace JA_projekt
                     imageByteArray3 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray3, 0);
 
-                    int length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - 54 ) / THREADS));
-                    int totallength = 54;
+                    int totalLength = 54;
+                    int length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - totalLength) / THREADS));
+                    
                     threads.Clear();
                     for (int i = 0; i < THREADS ; i++)
                     {
 
 
-                        if (totallength + length > imageByteArray3.Length - 1)
+                        if (totalLength + length > imageByteArray3.Length - 1)
                             length = imageByteArray3.Length - 1 - length * (i);
 
-                        object args = new object[2] { totallength, length};
+                        object args = new object[2] { totalLength, length};
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
                         threads[i].Start(args);
-                        totallength += length;
+                        totalLength += length;
                     }
-
-                  
-
-
 
                     foreach (Thread thr in threads)
                     {
@@ -304,12 +299,12 @@ namespace JA_projekt
                 }
                 else
                 {
-                    MessageBox.Show("The images must be the same size");
+                    MessageBox.Show("The images must be the same size", "Error");
                 }
             }
             else
             {
-                MessageBox.Show("Upload 2 images.");
+                MessageBox.Show("Upload 2 images.", "Error");
             }
         }
 
@@ -332,20 +327,21 @@ namespace JA_projekt
                     imageByteArray4 = new byte[imageByteArray1.Length];
                     imageByteArray1.CopyTo(imageByteArray4, 0);
 
-                    int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - 54) / THREADS));
-                    int totallength = 54;
+                    int totalLength = 54;
+                    int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - totalLength) / THREADS));
+                    
                     threads.Clear();
                     for (int i = 0; i < THREADS; i++)
                     {
 
 
-                        if (totallength + length > imageByteArray4.Length - 1)
+                        if (totalLength + length > imageByteArray4.Length - 1)
                             length = imageByteArray4.Length - 1 - length * (i);
 
-                        object args = new object[2] { totallength, length };
+                        object args = new object[2] { totalLength, length };
                         threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
                         threads[i].Start(args);
-                        totallength += length;
+                        totalLength += length;
                     }
 
 
@@ -368,12 +364,12 @@ namespace JA_projekt
                 }
                 else
                 {
-                    MessageBox.Show("The images must be the same size");
+                    MessageBox.Show("The images must be the same size", "Error");
                 }
             }
             else
             {
-                MessageBox.Show("Upload 2 images.");
+                MessageBox.Show("Upload 2 images.", "Error");
             }
         
         }
@@ -384,9 +380,9 @@ namespace JA_projekt
         * Calculates byte array range that the blending function is going to work on
         *
         */
-        
 
-        unsafe async private void BlendInCppInThreadOneParamater(object obj)
+
+        async unsafe private void BlendInCppInThreadOneParamater(object obj)
         {
             Array argArray = new object[3];
             argArray = (Array)obj;
@@ -402,6 +398,8 @@ namespace JA_projekt
             fixed (byte* fb2 = &imageByteArray2[byteIndex]) { firstByte2 = fb2; };
             BlendImagesInCpp2(firstByte1, firstByte2, length, ALPHA);
         }
+
+        
 
         /**
         * Name: BlendInAsmInThreadOneParamater
@@ -528,20 +526,21 @@ namespace JA_projekt
             imageByteArray4 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray4, 0);
 
-            int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - 54) / THREADS));
-            int totallength = 54;
+            int totalLength = 54;
+            int length = (int)Math.Floor((double)((imageByteArray4.Length - 1 - totalLength) / threadAmount));
+           
             threads.Clear();
-            for (int i = 0; i < THREADS; i++)
+            for (int i = 0; i < threadAmount; i++)
             {
 
 
-                if (totallength + length > imageByteArray4.Length - 1)
+                if (totalLength + length > imageByteArray4.Length - 1)
                     length = imageByteArray4.Length - 1 - length * (i);
 
-                object args = new object[2] { totallength, length };
+                object args = new object[2] { totalLength, length };
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInAsmInThreadOneParamater)));
                 threads[i].Start(args);
-                totallength += length;
+                totalLength += length;
             }
 
 
@@ -566,20 +565,21 @@ namespace JA_projekt
             imageByteArray3 = new byte[imageByteArray1.Length];
             imageByteArray1.CopyTo(imageByteArray3, 0);
 
-            length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - 54) / THREADS));
-            totallength = 54;
+            totalLength = 54;
+            length = (int)Math.Floor((double)((imageByteArray3.Length - 1 - totalLength) / threadAmount));
+
             threads.Clear();
-            for (int i = 0; i < THREADS; i++)
+            for (int i = 0; i < threadAmount; i++)
             {
 
 
-                if (totallength + length > imageByteArray3.Length - 1)
+                if (totalLength + length > imageByteArray3.Length - 1)
                     length = imageByteArray3.Length - 1 - length * (i);
 
-                object args = new object[2] { totallength, length };
+                object args = new object[2] { totalLength, length };
                 threads.Add(new Thread(new ParameterizedThreadStart(BlendInCppInThreadOneParamater)));
                 threads[i].Start(args);
-                totallength += length;
+                totalLength += length;
             }
 
 

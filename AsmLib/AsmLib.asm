@@ -36,7 +36,7 @@ alpharemainder dq 0 ; remainder of the  blending proportion variable (255 - alph
 BlendInAsm proc 
 
     ;load parameters to variables
-
+    push rbp
     push rax
     push rbx
     push rcx
@@ -78,7 +78,7 @@ Calculate:
     mov rcx, alpharemainder 
     mul rcx ; multiply by remainder of alpha
     mov rbx , rax ; store first image byte to rbx
-
+  
     mov rcx, qword ptr [byte2] 
     mov al, [rcx]
     movzx rax, al ; load second image byte to rax
@@ -131,6 +131,7 @@ Finished:
     pop rcx
     pop rbx
     pop rax
+    pop rbp
     ret ; exit procedure
 
 BlendInAsm endp
