@@ -59,26 +59,9 @@ namespace JA_projekt
         * No output parameters - all operations done on the first array pointers
         *
         */
-        unsafe public static extern void BlendImagesInCpp2(byte* byteArray1First, byte* byteArray2First, int length, int alpha);
+        unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray2First, int length, int alpha);
 
 
-#if DEBUG
-            [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-            //[DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-#else
-        //[DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Release/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        [DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
-        #endif
-        /**
-        * Name: BlendImagesInCpp
-        * Paramters: 4 pointers and the alpha blending value (0-255).
-        * Pointing to first and last byte in each imageArray.
-        * No output parameters - all operations done on the first array pointers
-        *
-        */
-        unsafe public static extern void BlendImagesInCpp(byte* byteArray1First, byte* byteArray1Last,
-                                                          byte* byteArray2First, byte* byteArray2Last,
-                                                          int alpha);
         #if DEBUG
             [DllImport("C:/Users/szymo/Desktop/studia/JA/projekt/JA_projekt/x64/Debug/CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
             //[DllImport("CppLib.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -396,7 +379,7 @@ namespace JA_projekt
             byte* firstByte2;
             fixed (byte* fb1 = &imageByteArray3[byteIndex]) { firstByte1 = fb1; };
             fixed (byte* fb2 = &imageByteArray2[byteIndex]) { firstByte2 = fb2; };
-            BlendImagesInCpp2(firstByte1, firstByte2, length, ALPHA);
+            BlendImagesInCpp(firstByte1, firstByte2, length, ALPHA);
         }
 
         

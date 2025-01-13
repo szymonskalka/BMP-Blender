@@ -36,22 +36,12 @@ uint64_t Ticks() {
 
 /**
 * Name: BlendImages
-* Paramters: 4 pointers and the alpha blending value (0-255).
-* Pointing to first and last byte in each imageArray.
+* Paramters: 2 pointers , length of the array and the alpha blending value (0-255).
+* Pointing to first  byte in each imageArray.
 * No output parameters - all operations done on the first array pointers
 *
 */
-void  BlendImages(std::byte* byteArray1First, std::byte* byteArray1Last,
-	std::byte* byteArray2First, std::byte* byteArray2Last,
-	int alpha) {
-	while (byteArray1First <= byteArray1Last) {
-		*byteArray1First = (std::byte)(((int)*byteArray1First * (255 - alpha) + (int)*byteArray2First * alpha) / 255);
-		byteArray1First++;
-		byteArray2First++;
-	}
-}
-
-void  BlendImages2(std::byte* byteArray1First,	std::byte* byteArray2First, int length,	int alpha) {
+void  BlendImages(std::byte* byteArray1First,	std::byte* byteArray2First, int length,	int alpha) {
 	for (int i = 0; i < length; i++) {
 		*byteArray1First = (std::byte)(((int)*byteArray1First * (255 - alpha) + (int)*byteArray2First * alpha) / 255);
 		byteArray1First++;
@@ -64,17 +54,8 @@ void  BlendImages2(std::byte* byteArray1First,	std::byte* byteArray2First, int l
 * Export definition
 *
 */
-extern "C" __declspec(dllexport)  void BlendImagesInCpp2(std::byte * byteArray1First, std::byte * byteArray2First, int length, int alpha) {
-	return BlendImages2(byteArray1First, byteArray2First, length, alpha);
-}
-/**
-* Export definition
-*  
-*/
-extern "C" __declspec(dllexport)  void BlendImagesInCpp(std::byte * byteArray1First, std::byte * byteArray1Last,
-	std::byte * byteArray2First, std::byte * byteArray2Last,
-	int alpha) {
-	return BlendImages(byteArray1First, byteArray1Last, byteArray2First, byteArray2Last, alpha);
+extern "C" __declspec(dllexport)  void BlendImagesInCpp(std::byte * byteArray1First, std::byte * byteArray2First, int length, int alpha) {
+	return BlendImages(byteArray1First, byteArray2First, length, alpha);
 }
 
 /**

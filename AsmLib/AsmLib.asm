@@ -71,7 +71,7 @@ BlendInAsm proc
     jmp Calculate
 
 Calculate:
-    jmp Test1
+    ;jmp Test1
     mov rcx, qword ptr [byte1] 
     mov al, [rcx]
     movzx rax, al ; load first image byte to rax
@@ -92,12 +92,11 @@ Calculate:
 
     mov rcx, qword ptr [byte1] 
     mov rax, newByte
-    mov byte ptr [rcx], al ; save blended value to pointer of imageByteArray4[]
-
-   
+    mov byte ptr [rcx], al 
+    ; save blended value to pointer of imageByteArray4[]
     jmp Check
 
-Test1:
+Test1: ; Used for testing if parameters are passed correctly 
     mov rcx, qword ptr [byte1] 
     mov al, [rcx]
     movzx rax, al ; load second image byte to rax
@@ -119,17 +118,17 @@ Check:
     jmp Finished ; finish if last byte is reached and blended 
 
 Increment:
-    mov rbx, byte1 ; load pointers of first     
-    inc rbx ; increment     
-    mov byte1, rbx ; save to variables
+    mov rax, byte1 ; load pointers of first     
+    inc rax ; increment     
+    mov byte1, rax ; save to variables
 
     mov rbx, byte2 ; same for second image bytes
     inc rbx
     mov byte2, rbx
 
-    mov rbx, index ; same for second image bytes
-    inc rbx
-    mov index, rbx
+    mov rcx, index ; same for second image bytes
+    inc rcx
+    mov index, rcx
 
     jmp Calculate ; return to Calculating
 
